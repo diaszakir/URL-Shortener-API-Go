@@ -1,0 +1,9 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: URL Shortener REST API project
+  title: URL Shortener API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
