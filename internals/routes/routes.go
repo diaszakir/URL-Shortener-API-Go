@@ -14,6 +14,10 @@ func RegisterRoutes(r *gin.Engine) {
 
 	r.POST("/shorten", handlers.CreateShortURL)
 
+	r.GET("/:code", handlers.RedirectURL)
+
+	r.GET("/info/:code", handlers.InfoURL)
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 

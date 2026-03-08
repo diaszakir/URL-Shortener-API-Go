@@ -13,6 +13,8 @@ const baseURL = "http://localhost:8080"
 
 var nextID int64 = 0
 
+var urlStore = make(map[string]*models.ShortURL)
+
 // CreateShortURL godoc
 // @Summary Creating short url
 // @Description Creating a new short url
@@ -29,9 +31,8 @@ func CreateShortURL(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Incorrect data"})
+		return
 	}
-
-	nextID++
 
 	id := atomic.AddInt64(&nextID, 1)
 	maskedID := id*7919 + 1000000
@@ -39,9 +40,12 @@ func CreateShortURL(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		return
 	}
 
-	code = code[1:]
+	if len(code) > 1 {
+		code = code[1:]
+	}
 
 	var res models.URLResponse
 
@@ -51,5 +55,30 @@ func CreateShortURL(c *gin.Context) {
 		ShortURL:    baseURL + "/" + code,
 	}
 
+	urlStore[code] = &models.ShortURL{
+		Code:        code,
+		OriginalURL: res.OriginalURL,
+		Clicks:      0,
+	}
+
 	c.JSON(http.StatusCreated, res)
+}
+
+func RedirectURL(c *gin.Context) {
+	code := c.Param("code")
+
+	url, ok := urlStore[code]
+
+	if !ok {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Not found"})
+		return
+	}
+
+	urlStore[code].Clicks++
+
+	c.Redirect(http.StatusFound, url.OriginalURL)
+}
+
+func InfoURL(c *gin.Context) {
+
 }
