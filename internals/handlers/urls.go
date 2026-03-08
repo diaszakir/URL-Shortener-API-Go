@@ -80,5 +80,14 @@ func RedirectURL(c *gin.Context) {
 }
 
 func InfoURL(c *gin.Context) {
+	code := c.Param("code")
 
+	url, ok := urlStore[code]
+
+	if !ok {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, url)
 }
