@@ -1,9 +1,56 @@
 basePath: /
+definitions:
+  models.URLRequest:
+    properties:
+      url:
+        type: string
+    required:
+    - url
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: URL Shortener REST API project
   title: URL Shortener API
   version: "1.0"
-paths: {}
+paths:
+  /health:
+    get:
+      description: Checking API and services working
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Check API
+      tags:
+      - health
+  /shorten:
+    post:
+      consumes:
+      - application/json
+      description: Creating a new short url
+      parameters:
+      - description: URL payload
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.URLRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Creating short url
+      tags:
+      - urls
 swagger: "2.0"
