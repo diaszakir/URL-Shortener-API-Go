@@ -38,6 +38,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/info/{code}": {
+            "get": {
+                "description": "Showing information about URL",
+                "tags": [
+                    "urls"
+                ],
+                "summary": "Info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ShortURL"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/shorten": {
             "post": {
                 "description": "Creating a new short url",
@@ -63,8 +98,37 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.URLResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{code}": {
+            "get": {
+                "description": "Redirecting from shorted URL",
+                "tags": [
+                    "urls"
+                ],
+                "summary": "Redirect",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Found"
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -77,6 +141,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.ShortURL": {
+            "type": "object",
+            "properties": {
+                "clicks": {
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "original_url": {
+                    "type": "string"
+                }
+            }
+        },
         "models.URLRequest": {
             "type": "object",
             "required": [
@@ -84,6 +165,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.URLResponse": {
+            "type": "object",
+            "properties": {
+                "original_url": {
+                    "type": "string"
+                },
+                "short_code": {
+                    "type": "string"
+                },
+                "short_url": {
                     "type": "string"
                 }
             }

@@ -1,11 +1,31 @@
 basePath: /
 definitions:
+  models.ShortURL:
+    properties:
+      clicks:
+        type: integer
+      code:
+        type: string
+      created_at:
+        type: string
+      original_url:
+        type: string
+    type: object
   models.URLRequest:
     properties:
       url:
         type: string
     required:
     - url
+    type: object
+  models.URLResponse:
+    properties:
+      original_url:
+        type: string
+      short_code:
+        type: string
+      short_url:
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -14,6 +34,27 @@ info:
   title: URL Shortener API
   version: "1.0"
 paths:
+  /{code}:
+    get:
+      description: Redirecting from shorted URL
+      parameters:
+      - description: Short code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Found
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Redirect
+      tags:
+      - urls
   /health:
     get:
       description: Checking API and services working
@@ -29,6 +70,29 @@ paths:
       summary: Check API
       tags:
       - health
+  /info/{code}:
+    get:
+      description: Showing information about URL
+      parameters:
+      - description: Short code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ShortURL'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Info
+      tags:
+      - urls
   /shorten:
     post:
       consumes:
@@ -44,12 +108,10 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/models.URLResponse'
       summary: Creating short url
       tags:
       - urls
