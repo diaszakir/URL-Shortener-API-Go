@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"sync/atomic"
+	"time"
 
 	"github.com/diaszakir/URL-Shortener-API-Go/internals/models"
 	"github.com/diaszakir/base62-go"
@@ -22,7 +23,7 @@ var urlStore = make(map[string]*models.ShortURL)
 // @Produce json
 // @Accept json
 // @Param todo body models.URLRequest true "URL payload"
-// @Success 200 {object} map[string]string
+// @Success 201 {object} models.URLResponse
 // @Router /shorten [post]
 func CreateShortURL(c *gin.Context) {
 
@@ -58,12 +59,21 @@ func CreateShortURL(c *gin.Context) {
 	urlStore[code] = &models.ShortURL{
 		Code:        code,
 		OriginalURL: res.OriginalURL,
+		CreatedAt:   time.Now(),
 		Clicks:      0,
 	}
 
 	c.JSON(http.StatusCreated, res)
 }
 
+// RedirectURL godoc
+// @Summary Redirect
+// @Description Redirecting from shorted URL
+// @Tags urls
+// @Param code path string true "Short code"
+// @Success 302
+// @Failure 404 {object} map[string]string
+// @Router /{code} [get]
 func RedirectURL(c *gin.Context) {
 	code := c.Param("code")
 
@@ -79,6 +89,14 @@ func RedirectURL(c *gin.Context) {
 	c.Redirect(http.StatusFound, url.OriginalURL)
 }
 
+// InfoURL godoc
+// @Summary Info
+// @Description Showing information about URL
+// @Tags urls
+// @Param code path string true "Short code"
+// @Success 200 {object} models.ShortURL
+// @Failure 404 {object} map[string]string
+// @Router /info/{code} [get]
 func InfoURL(c *gin.Context) {
 	code := c.Param("code")
 
