@@ -1,6 +1,6 @@
 # URL Shortener API Project
 
-One of the project of golang [list](https://github.com/diaszakir/Golang-Projects/)
+One of the project of golang [list](https://github.com/diaszakir/Backend-Projects/)
 
 ## Description
 
